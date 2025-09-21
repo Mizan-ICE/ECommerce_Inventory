@@ -53,6 +53,8 @@ public class ProductService : IProductService
         return _mapper.Map<ProductDto>(product);
     }
 
+ 
+
     public async Task<UpdateProductDto> UpdateProductAsync(int id, UpdateProductDto productDto)
     {
         var existing = await _unitOfWork.ProductRepository.GetByIdAsync(id);
@@ -64,5 +66,15 @@ public class ProductService : IProductService
         await _unitOfWork.SaveAsync();
         return productDto;
     }
+
+    public async Task<IEnumerable<ProductDto>> SearchProductsAsync(string keyword)
+    {
+        var products = await _unitOfWork.ProductRepository.SearchProductsAsync(keyword);
+        return _mapper.Map<IEnumerable<ProductDto>>(products);
+    }
+
+   
+
+
 }
 

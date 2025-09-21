@@ -8,6 +8,7 @@ using ECommerce_Inventory.Domain.Entity;
 using ECommerce_Inventory.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
 
+
 namespace ECommerce_Inventory.Infrastructure.Repositories;
 public class BaseRepository<T>: IBaseRepository<T> where T : class,IEntity ,new()
 {
@@ -53,4 +54,6 @@ public class BaseRepository<T>: IBaseRepository<T> where T : class,IEntity ,new(
         query = includeProperties.Aggregate(query, (current, includeProperty) => current.Include(includeProperty));
         return await query.ToListAsync();
     }
+
+    
 }

@@ -1,4 +1,6 @@
-﻿using ECommerce_Inventory.Application.Dtos;
+﻿using System.Web;
+using ECommerce_Inventory.Domain;
+using ECommerce_Inventory.Application.Dtos;
 using ECommerce_Inventory.Application.Services;
 using ECommerce_Inventory.Domain.Entity;
 using ECommerce_Inventory.Domain.Interfaces;
@@ -46,6 +48,7 @@ public class ProductController : ControllerBase
         var product = await _service.AddProductAsync(productDto);
         if (product == null)
         return NotFound("No Product is found");
+
         return Ok(new { Message = "Add this product is successfully ", product });
 
     }
@@ -55,6 +58,7 @@ public class ProductController : ControllerBase
         var updatedProduct = await _service.UpdateProductAsync(id, product);
         if (updatedProduct == null)
             return NotFound("Product not exist");
+
         return Ok(new { Message = "Updated successfully ", updatedProduct });
 
     }
@@ -64,7 +68,46 @@ public class ProductController : ControllerBase
         var deletedProduct = await _service.DeleteProductAsync(id);
         if (deletedProduct == null)
             return NotFound("Product not exist");
+
         return Ok(new { Message = deletedProduct });
+    }
+
+    [HttpGet("search")]
+    [AllowAnonymous]
+    public async Task<IActionResult> SearchProductsSimple([FromQuery] string q)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(q))
+            {
+                return BadRequest("Search keyword (q) is required.");
+            }
+
+            var products = await _service.SearchProductsAsync(q);
+
+            if (!products.Any())
+            {
+                return Ok(new
+                {
+                    Message = $"No products found for search term '{q}'",
+                    Products = products,
+                    Count = 0,
+                    SearchTerm = q
+                });
+            }
+
+            return Ok(new
+            {
+                Message = $"Found {products.Count()} products matching '{q}'",
+                Products = products,
+                Count = products.Count(),
+                SearchTerm = q
+            });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest($"Error searching products: {ex.Message}");
+        }
     }
 }
 
