@@ -2,29 +2,6 @@
 
 A comprehensive inventory management system built with .NET 9, featuring JWT authentication, product management, category management, and search functionality.
 
-## 🚀 Features
-
-- **Authentication & Authorization**
-  - JWT-based authentication with refresh tokens
-  - User registration and login
-  - Secure token management
-
-- **Product Management**
-  - CRUD operations for products
-  - Advanced search functionality
-  - Product filtering and pagination
-  - Category-based organization
-
-- **Category Management**
-  - Category CRUD operations
-  - Product count per category
-  - Category-based product filtering
-
-- **Search & Filtering**
-  - Product search by name and description
-  - Filter by category, price range
-  - Pagination support
-  - Sorting capabilities
 
 ## 🏗️ Architecture
 
@@ -106,7 +83,7 @@ Or using Visual Studio:
 ### Authentication
 - `POST /api/auth/register` - User registration
 - `POST /api/auth/login` - User login
-- `POST /api/auth/refresh-token` - Refresh access token
+
 
 ### Products
 - `GET /api/products` - Get all products with filtering
