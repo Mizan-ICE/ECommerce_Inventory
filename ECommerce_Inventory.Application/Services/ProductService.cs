@@ -19,28 +19,24 @@ public class ProductService : IProductService
         _unitOfWork = unitOfWork;
         _mapper = mapper;
     }
-    public async Task AddProductAsync(AddProductDto productDto)
+    public async Task<AddProductDto> AddProductAsync(AddProductDto productDto)
     {
-        if (productDto.CategoryId <= 0 ||
-                    await _unitOfWork.CategoryRepository.GetByIdAsync(productDto.CategoryId) is null)
-            throw new KeyNotFoundException($"Category with id {productDto.CategoryId} not found.");
-
-        var product = _mapper.Map<Product>(productDto);
+           var product = _mapper.Map<Product>(productDto);
         await _unitOfWork.ProductRepository.AddAsync(product);
         await _unitOfWork.SaveAsync();
-
-
-
+        return productDto;
     }
 
-    public async Task DeleteProductAsync(int id)
+    public async Task<string> DeleteProductAsync(int id)
     {
         var existing = await _unitOfWork.ProductRepository.GetByIdAsync(id);
         if (existing is null)
-            throw new KeyNotFoundException($"Product with id {id} not found.");
+       return null;
+
 
         await _unitOfWork.ProductRepository.DeleteAsync(id);
         await _unitOfWork.SaveAsync();
+        return "Deleted successfully";
     }
 
     public async Task<IEnumerable<ProductDto>> GetAllProductsAsync()
@@ -52,18 +48,21 @@ public class ProductService : IProductService
     public async Task<ProductDto?> GetProductByIdAsync(int id)
     {
         var product = await _unitOfWork.ProductRepository.GetByIdAsync(id);
+        if (product is null)
+        return null;
         return _mapper.Map<ProductDto>(product);
     }
 
-    public async Task UpdateProductAsync(int id, UpdateProductDto productDto)
+    public async Task<UpdateProductDto> UpdateProductAsync(int id, UpdateProductDto productDto)
     {
         var existing = await _unitOfWork.ProductRepository.GetByIdAsync(id);
         if (existing is null)
-            throw new KeyNotFoundException($"Product with id {id} not found.");
+            return null;
 
         _mapper.Map(productDto, existing);
 
         await _unitOfWork.SaveAsync();
+        return productDto;
     }
 }
 

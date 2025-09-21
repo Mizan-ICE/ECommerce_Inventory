@@ -1,11 +1,15 @@
-﻿using ECommerce_Inventory.Application.Dtos.CategoryDtos;
+﻿using ECommerce_Inventory.Application.Dtos;
+using ECommerce_Inventory.Application.Dtos.CategoryDtos;
+using ECommerce_Inventory.Application.Services;
+using ECommerce_Inventory.Domain.Entity;
 using ECommerce_Inventory.Domain.Interfaces;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ECommerce_Inventory.Api.Controllers;
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class CategoryController : ControllerBase
 {
     private readonly ICategoryService _categoryService;
@@ -22,37 +26,46 @@ public class CategoryController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetCategoryById(int id)
     {
-        var category = await _categoryService.GetCategoryByIdAsync(id);
-        if (category == null)
-        {
-            return NotFound();
-        }
+          var category = await _categoryService.GetCategoryByIdAsync(id);
+            
+         if(category==null)
+         return NotFound("No category is found");
         return Ok(category);
+
+
+
     }
     [HttpPost]
     public async Task<IActionResult> AddCategory([FromBody] AddCategoryDto categoryDto)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
-        await _categoryService.AddCategoryAsync(categoryDto);
-        return CreatedAtAction(nameof(GetCategoryById), new { id = categoryDto.Name }, categoryDto);
+
+        var addCategory = await _categoryService.AddCategoryAsync(categoryDto);
+        if (addCategory == null)
+            return NotFound("Not found Categories yet");
+
+        return Ok(addCategory);
+
+
+
+
     }
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateCategory(int id, [FromBody] UpdateCategoryDto categoryDto)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
-        await _categoryService.UpdateCategoryAsync(id, categoryDto);
-        return NoContent();
+        var editCategory = await _categoryService.UpdateCategoryAsync(id, categoryDto);
+        if (editCategory == null)
+            return NotFound("Not found Categories yet");
+        return Ok(editCategory);
     }
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteCategory(int id)
     {
-        await _categoryService.DeleteCategoryAsync(id);
-        return NoContent();
+
+        var category = await _categoryService.DeleteCategoryAsync(id);
+        if (category is null)
+            return NotFound("Category Not Exist");
+        return Ok(category);
+
+
     }
 }
